@@ -3,16 +3,17 @@ $(document).ready(function(){
 alternarColor();
 
 });
+//------------------------
 var i=0;
-var puntos,eliminar=0;
-var flagH, flagV=0;
+var puntos,eliminar,intervalo,dulces, tiempo=0;
+var flagH, flagV, contador=0;
 var completardulces=0;
 var elementosEncol=[];
-
+//-------------------------
 function alternarColor() {
       poner()
     }
-
+//-----------------------------
 function poner(){
   $(".main-titulo").delay(1000).animate({
     color:'#FFF'  //si se cambia a color negro da otra animacion como que desaparece.
@@ -20,6 +21,7 @@ function poner(){
   {quitar();
 })
 }
+//-------------------------------
 function quitar(){
   $(".main-titulo").delay(1000).animate({
     color:'#DCFF0E'
@@ -27,6 +29,7 @@ function quitar(){
   {poner();
   })
   }
+  //-------------------------
 function llenadoTablero()
 {
   i=i+1
@@ -52,7 +55,7 @@ function llenadoTablero()
         comparar=setInterval(function(){eliminarIguales()},200)
       }// cierre del if i=8
 } //cierra la funcion de llenado de tablero
-
+//-------------------------------------------
 function eliminarIguales()
 {
   matriz=0,
@@ -78,9 +81,10 @@ function eliminarIguales()
 
       //bnewd=0;
       i=0;
-      nuevosdulces();  //Funcion completar nuevos dulces
+      dulces=setInterval(function(){nuevosdulces()},1000)  //Funcion completar nuevos dulces
   }
 }//fin funcion eleminarIguales
+//------------------------------------------------
 function nuevosdulces()
 {
     i=i+1
@@ -89,23 +93,23 @@ function nuevosdulces()
 
     $(".elemento").draggable({ disabled: true });
     //$("div[class^='col']").css("justify-content","flex-start")     esta linea sube todo
-
+    //alert("ya llegue")
       for(var j=1;j<8;j++)
       {
         elementosEncol[j-1]=$(".col-"+j).children().length;
       }
 
     for(var n=0;n<7;n++)
-      {for(var c=0;c<7-elementosEncol[n];c++)
-
-        {
-          numero=Math.floor(Math.random() * 4) + 1 ;
-          imagen="image/"+numero+".png";
-          $(".col-"+(n+1)).prepend("<img src="+imagen+" class='elemento'/>").css("justify-content","flex-start")
-        }
+      {if (0<7-elementosEncol[n])  //es un if para que solo ponga uno y se vea la animacion
+          {
+            numero=Math.floor(Math.random() * 4) + 1 ;
+            imagen="image/"+numero+".png";
+            $(".col-"+(n+1)).prepend("<img src="+imagen+" class='elemento'/>").css("justify-content","flex-start")
+          }
       }//fin de primer for
-//alert("ya llegue")
+
 }//fin de funcion nuevos dulces
+//-------------------------------------
 function BusquedaHorizontal()
 {
   var bh=0;
@@ -127,7 +131,7 @@ function BusquedaHorizontal()
   }
   return bh;
 } //cierre de funcion BusquedaHorizontal
-
+//-------------------------------------------
 function BusquedaVertical()
 {
   var bv=0;
@@ -149,21 +153,78 @@ function BusquedaVertical()
   }
   return bv;
 } //cierre de funcion BusquedaVertical
+//-------------------------------------------
+function timer()
+{
+  if(seg!=0)
+  {
+    seg=seg-1;
+  }
+  if(seg==0)
+  {
+    if(min==0)
+    {
+      clearInterval(eliminar);
+      clearInterval(dulces);
+      clearInterval(intervalo);
+      clearInterval(tiempo);
+      $( ".panel-tablero" ).hide("drop","slow",animacion);
+      $( ".time" ).hide();
+    }
+    seg=59;
+    min=min-1;
+  }
+  if (seg<10)
+    {$("#timer").html("0"+min+":0"+seg)}
+  else {
+    $("#timer").html("0"+min+":"+seg)
+  } //fin del else
+}  //fin de la funcion timer
+//--------------------------------------------
+function animacion()
+{
+  $( ".panel-score" ).animate({width:'100%'},2000);
+}
+//----------------------------------------------------
 $(".btn-reinicio").click(function(){
-  $("#score-text").html("0")
-  $("#movimientos-text").html("0")
-  $(this).html("REINICIAR")//el boton cambiara la palabra de inicio a REINICIAR
-  min=2;  //Tiempo en minutos que durara el juego
-  seg=0;
+  contador=contador+1;
 
-  borradoTablero();
-  intervalo=setInterval(function(){llenadoTablero ()},600);
-})
+   $(".panel-score").css("width","25%");
+    $(".panel-tablero").show();
+    $(".time").show();
 
+    $("#score-text").html("0").delay(500);
+    $("#movimientos-text").html("0").delay (1000);
+    //$(this).html("REINICIAR")//el boton cambiara la palabra de inicio a REINICIAR
+    $(this).addClass("invisible");
+    $("#reinicio").removeClass("invisible");
+    min=2;  //Tiempo en minutos que durara el juego
+    seg=0;
+    i=0;
+    puntos=0;
+    movimientos=0;
+    clearInterval(intervalo);
+    clearInterval(eliminar);
+    clearInterval(dulces);
+    clearInterval(tiempo);
+    borradoTablero();
+
+    intervalo=setInterval(function(){llenadoTablero ()},500);
+    tiempo=setInterval(function(){timer()},1000);
+
+}) //fin del click boton de inicio/reinicio
+//------------------------------------------------------
 function borradoTablero()
 {
   for(var j=1;j<8;j++)
   {
-    $(".col-"+j).children("img").detach();
+    $(".col-"+j).children("img").remove();
   }
 }
+$(".refrescar").click(function()
+{
+  $(this).addClass("invisible");
+  $("#inicio").removeClass("invisible")
+  location.reload();
+
+});

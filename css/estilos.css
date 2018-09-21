@@ -78,7 +78,7 @@ body{
   color: #E8CA06;
 }
 
-.btn-reinicio{
+.btn-reinicio, .refrescar{
   background: #E8CA06;
   border: 6px solid #FFB206;
   border-radius: 5px;
@@ -90,6 +90,12 @@ body{
   color: #fff;
   cursor: pointer;
 }
+.refrescar:hover{
+  color: #fff;
+  cursor: pointer;
+}
+
+.invisible{ display: none;}
 .btn-reinicio:active{
   font-size: 1em;
 }
