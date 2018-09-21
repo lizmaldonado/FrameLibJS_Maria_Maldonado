@@ -2,13 +2,15 @@ $(document).ready(function(){
 
 alternarColor();
 
-});
+
+}); //fin del ready
 //------------------------
 var i=0;
 var puntos,eliminar,intervalo,dulces, tiempo=0;
 var flagH, flagV, contador=0;
 var completardulces=0;
 var elementosEncol=[];
+var espera=0;
 //-------------------------
 function alternarColor() {
       poner()
@@ -36,7 +38,7 @@ function llenadoTablero()
   var numero=0;
   var imagen=0;
 
-  $(".elemento").draggable({ disabled: true });
+  $(".elemento").draggable({ disabled: true });//todos los dulces se pueden agarrar
   if(i<8)
       {
         for(var j=1;j<8;j++)
@@ -58,7 +60,7 @@ function llenadoTablero()
 //-------------------------------------------
 function eliminarIguales()
 {
-  matriz=0,
+
   flagH=BusquedaHorizontal()//busca coincidencias de forma horizontal
   flagV=BusquedaVertical() // busca coincidencias de forma vertical
   if(flagH==1 || flagV==1)   //entra si hay que quitar elementos
@@ -74,26 +76,75 @@ function eliminarIguales()
       $("#score-text").html(puntos)  //Cambiar puntuacion
     })
   }  // se cierra el if si hay coincidencia
-  //if(flagH==0 && flagV==0 && matriz!=49)  // si no encuentra coincidencias y no esta el tablero lleno
+
   if ($(".activo").length==0)
   {
       clearInterval(eliminar);
 
-      //bnewd=0;
+
       i=0;
       dulces=setInterval(function(){nuevosdulces()},1000)  //Funcion completar nuevos dulces
   }
+  if(flagH==0 && flagV==0 )
+  {
+    $(".elemento").draggable({
+      disabled: false,
+      containment: ".panel-tablero",
+      revert: true,
+      revertDuration: 0,
+      snap: ".elemento",
+      snapMode: "inner",
+      snapTolerance: 40,
+      start: function(event, ui){
+        mov=mov+1;
+        $("#movimientos-text").html(mov)
+      }
+    });
+  }
+
+  $(".elemento").droppable({
+    drop: function (event, ui) {
+      var dropped = ui.draggable;
+      var droppedOn = this;
+      espera=0;
+      do{
+        espera=dropped.swap($(droppedOn));
+      }while(espera==0)
+      flagH=BusquedaHorizontal()//busca coincidencias de forma horizontal
+      flagV=BusquedaVertical() // busca coincidencias de forma vertical
+      if(flagH==0 && flagV==0)
+      {
+        dropped.swap($(droppedOn));
+      }
+      if(flagH==1 || flagV==1)
+      {
+        clearInterval(dulces);
+        clearInterval(eliminar);   //desactivar funcion desplazamiento()
+        comparar=setInterval(function(){eliminarIguales()},1000)  //activar funcion eliminarhorver
+      }
+    },
+  });
 }//fin funcion eleminarIguales
 //------------------------------------------------
+jQuery.fn.swap = function(b)
+{
+    b = jQuery(b)[0];
+    var a = this[0];
+    var t = a.parentNode.insertBefore(document.createTextNode(''), a);
+    b.parentNode.insertBefore(a, b);
+    t.parentNode.insertBefore(b, t);
+    t.parentNode.removeChild(t);
+    return this;
+};
+//------------------------
 function nuevosdulces()
 {
     i=i+1
     var numero=0;
     var imagen=0;
 
-    $(".elemento").draggable({ disabled: true });
-    //$("div[class^='col']").css("justify-content","flex-start")     esta linea sube todo
-    //alert("ya llegue")
+    $(".elemento").draggable("enable");
+    
       for(var j=1;j<8;j++)
       {
         elementosEncol[j-1]=$(".col-"+j).children().length;
@@ -188,14 +239,14 @@ function animacion()
 //----------------------------------------------------
 $(".btn-reinicio").click(function(){
   contador=contador+1;
-
+  mov=0;
    $(".panel-score").css("width","25%");
     $(".panel-tablero").show();
     $(".time").show();
 
-    $("#score-text").html("0").delay(500);
-    $("#movimientos-text").html("0").delay (1000);
-    //$(this).html("REINICIAR")//el boton cambiara la palabra de inicio a REINICIAR
+    $("#score-text").html("0");
+    $("#movimientos-text").html("0");
+
     $(this).addClass("invisible");
     $("#reinicio").removeClass("invisible");
     min=2;  //Tiempo en minutos que durara el juego
@@ -221,6 +272,7 @@ function borradoTablero()
     $(".col-"+j).children("img").remove();
   }
 }
+//---------------------------------------------------
 $(".refrescar").click(function()
 {
   $(this).addClass("invisible");
