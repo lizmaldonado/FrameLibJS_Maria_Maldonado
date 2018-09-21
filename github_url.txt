@@ -1,0 +1,14 @@
+
+https://github.com/lizmaldonado/FrameLibJS_Maria_Maldonado
+
+
+Proyecto Juego de dulces utilizando Jquery, Jquery UI
+
+
+Este es el URL de mi proyecto versionado en el repositorio.
+contiene un archivo principal llamado index.html
+y 4 carpetas,  la js que trae el archivo app.js y las librerias
+
+la css con un archivo de estilos css llamado estilos.css y las librerias
+La  carpeta fonts con el tipo de letra de game PressStart2P y
+La carpeta image con las imagenes necesarias para el juego.
